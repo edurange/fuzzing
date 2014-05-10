@@ -1,0 +1,21 @@
+
+python
+
+import string
+
+#myout = gdb.execute("r \"Hi!!!!\"", False, True)
+myout = gdb.execute("r \"Hi!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1\"", False, True)
+
+#print(str(myout) + "\n")
+
+if myout.count("normally") == 1:
+  print("the program finished fine!")
+else:
+  wordlist = myout.split(" ")
+  for i, j in enumerate(wordlist):
+    if j.find("0x") != -1:
+      print(wordlist[i])
+end
+
+q
+

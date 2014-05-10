@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# get the pid of the server if it exists
+SRVR_PID=$(ps -C nc -o pid= )
+
+# if the pid is empty (server doesnt exist), start it
+# on port 1337
+if [ "$SRVR_PID" == "" ]; then
+
+  nc -k -l 1337 > /tmp/calc_in_out
+
+fi
+
