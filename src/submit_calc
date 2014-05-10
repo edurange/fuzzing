@@ -10,18 +10,19 @@ if [ ! $1 == "" ]; then
   else 	# if the calc exists, run it, and return the output to
 	# the scorebot
 
-    cp gdb_script_front run_calc_gdb_script
-    echo "file $1" >> run_calc_gdb_script
+    cp gdb_script_front run_calc_gdb_script.py.gdb
+    echo "file $1" >> run_calc_gdb_script.py.gdb
     cp gdb_script_back gdb_tmp_back
-    cat gdb_tmp_back >> run_calc_gdb_script
+    cat gdb_tmp_back >> run_calc_gdb_script.py.gdb
     rm gdb_tmp_back
-    gdb -q -x run_calc_gdb_script >> tmp
+    gdb -q -x run_calc_gdb_script.py.gdb >> tmp
 
     if grep -q 'killed' "./tmp" ; then
 
       NOW=$(date +%F--%R%p)
       echo ">.< Oh man, your calculator crashed.. -> crash_addr_$NOW.txt"
       cat tmp | grep "0x" > crash_addr_$NOW.txt
+      echo "[!!] crashed" | nc 10.0.0.8 2222
       NOW=""
       rm tmp
 
@@ -30,13 +31,14 @@ if [ ! $1 == "" ]; then
       NOW=$(date +%F--%R%p)
       echo "OK, Here's your output (also in the file $NOW.txt):"
       # the following eventually should be something more liek: ./$1 > $NOW.txt
+      # cat $NOW.txt | nc 10.0.0.8 2222
       cat tmp
       mv tmp $NOW.txt
       NOW=""
 
     fi
 
-    rm run_calc_gdb_script
+    rm run_calc_gdb_script.py.gdb
 
   fi
 
