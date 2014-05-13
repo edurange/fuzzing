@@ -26,6 +26,12 @@ while [ 0 ]; do
 
   if [ python -c "import os,time; print time.ctime(os.path.getmtime('/tmp/calc_in_out'))" != "$LASTMODIFIED" ]; then
 
+  if [ "$(tail --lines=1 /tmp/calc)" == "stop getting attacker input"  ]; then
+  
+    exit
+  
+  fi
+
     LASTMODIFIED=$(python -c "import os,time; print time.ctime(os.path.getmtime('/tmp/calc_in_out'))")
     INPUT="$(tail --lines=1 /tmp/calc_in_out)"
     cp gdb_script_front run_calc_gdb_script_.py.gdb
