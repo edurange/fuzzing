@@ -1,7 +1,13 @@
 #!/bin/bash
 
+if [ ! $# -eq 2 ]; then
 
-mkdir log/calc_scenario
+  echo "Usage: get_attacker_input calculator_file last_modified_time_of_calc_in_out_file"
+  exit
+
+fi
+
+mkdir /var/log/calc_scenario
 
 FILE="$1"
 LASTMODIFIED=$2
@@ -10,9 +16,10 @@ while [ 0 ]; do
 
   if [ python -c "import os,time; print time.ctime(os.path.getmtime('/tmp/calc_in_out'))" != "$LASTMODIFIED" ]; then
 
+    LASTMODIFIED=$(python -c "import os,time; print time.ctime(os.path.getmtime('/tmp/calc_in_out'))")
     INPUT="$(tail --lines=1 /tmp/calc_in_out)"
     cp gdb_script_front run_calc_gdb_script_.py.gdb
-    echo "file $FILE
+    echo "file $($FILE)
 python
 import string
 myout = gdb.execute("r \"$($INPUT)\"", False, True)
@@ -20,22 +27,23 @@ myout = gdb.execute("r \"$($INPUT)\"", False, True)
     cp gdb_script_back gdb_tmp_back
     cat gdb_tmp_back >> run_calc_gdb_script.py.gdb
     rm gdb_tmp_back
-    gdb -q -x run_calc_gdb_script.py.gdb >> tmp
+    TMPFILE=$(mktemp "./temporary.XXXX")
+    gdb -q -x run_calc_gdb_script.py.gdb >> $TMPFILE
 
-    if grep -q 'killed' "./tmp" ; then
+    if grep -q 'killed' "$TMPFILE" ; then
 
       NOW=$(date +%F--%R%p)
-      cat tmp | grep "0x" > log/calc_scenario/crash_addr_$NOW.txt
-      echo "$($INPUT):0:$(cat log/calc_scenario/crash_addr_$NOW.txt)" | nc scorebot 0000 # remember to change this line according to SB specs
+      grep '0x' "./$TMPFILE" > /var/log/calc_scenario/crash_addr_$NOW.txt
+      echo "$($INPUT):0:$(cat /var/log/calc_scenario/crash_addr_$NOW.txt)" | nc scorebot 0000 # remember to change this line according to SB specs
       echo "$($INPUT):[!!] calculator crashed." | nc 10.0.0.8 2222 
       NOW=""
-      rm tmp
+      rm $TMPFILE
 
     else
 
       NOW=$(date +%F--%R%p)
-      mv tmp $NOW.txt
-      echo "$($INPUT):1:$(cat $NOW.txt)" | nc scorebot 0000
+      mv $TMPFILE $NOW.txt
+      echo "$($INPUT):1:$(cat $NOW.txt)" | nc scorebot 0000 # and to change this
       cat $NOW.txt | nc 10.0.0.8 2222
       NOW=""
 
@@ -44,6 +52,7 @@ myout = gdb.execute("r \"$($INPUT)\"", False, True)
     rm run_calc_gdb_script.py.gdb
 
   fi
+  sleep 8
 
 done
 
