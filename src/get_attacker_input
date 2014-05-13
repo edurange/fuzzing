@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# if the given arument count isn't equal to two then the script isn't being used correctly
+# 		-> print usage and exit
 if [ ! $# -eq 2 ]; then
 
   echo "Usage: get_attacker_input calculator_file last_modified_time_of_calc_in_out_file"
@@ -7,11 +9,19 @@ if [ ! $# -eq 2 ]; then
 
 fi
 
+# directory to log the calc outputs and attacker inputs on defending instance
 mkdir /var/log/calc_scenario
 
-FILE="$1"
-LASTMODIFIED=$2
 
+CALC_EXEC="$1"
+LASTMODIFIED="$2"
+
+# while (true):
+#  check if /tmp/calc_in_out was modified and went unchecked
+#  if true, run the new input in gdb on the calc executable
+#  send output, error or some possibly incorrect output to
+#  the scorebot to get checked out, and log to attacker and
+#  defending machines.
 while [ 0 ]; do
 
   if [ python -c "import os,time; print time.ctime(os.path.getmtime('/tmp/calc_in_out'))" != "$LASTMODIFIED" ]; then
@@ -19,7 +29,7 @@ while [ 0 ]; do
     LASTMODIFIED=$(python -c "import os,time; print time.ctime(os.path.getmtime('/tmp/calc_in_out'))")
     INPUT="$(tail --lines=1 /tmp/calc_in_out)"
     cp gdb_script_front run_calc_gdb_script_.py.gdb
-    echo "file $($FILE)
+    echo "file $($CALC_EXEC)
 python
 import string
 myout = gdb.execute("r \"$($INPUT)\"", False, True)
@@ -27,22 +37,22 @@ myout = gdb.execute("r \"$($INPUT)\"", False, True)
     cp gdb_script_back gdb_tmp_back
     cat gdb_tmp_back >> run_calc_gdb_script.py.gdb
     rm gdb_tmp_back
-    TMPFILE=$(mktemp "./temporary.XXXX")
-    gdb -q -x run_calc_gdb_script.py.gdb >> $TMPFILE
+    TMP_FILE=$(mktemp "./temporary.XXXX")
+    gdb -q -x run_calc_gdb_script.py.gdb >> $TMP_FILE
 
-    if grep -q 'killed' "$TMPFILE" ; then
+    if grep -q 'killed' "$TMP_FILE" ; then
 
       NOW=$(date +%F--%R%p)
-      grep '0x' "./$TMPFILE" > /var/log/calc_scenario/crash_addr_$NOW.txt
+      grep '0x' "./$TMP_FILE" > /var/log/calc_scenario/crash_addr_$NOW.txt
       echo "$($INPUT):0:$(cat /var/log/calc_scenario/crash_addr_$NOW.txt)" | nc scorebot 0000 # remember to change this line according to SB specs
       echo "$($INPUT):[!!] calculator crashed." | nc 10.0.0.8 2222 
       NOW=""
-      rm $TMPFILE
+      rm $TMP_FILE
 
     else
 
       NOW=$(date +%F--%R%p)
-      mv $TMPFILE $NOW.txt
+      mv $TMP_FILE $NOW.txt
       echo "$($INPUT):1:$(cat $NOW.txt)" | nc scorebot 0000 # and to change this
       cat $NOW.txt | nc 10.0.0.8 2222
       NOW=""
