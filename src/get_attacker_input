@@ -20,7 +20,7 @@ LASTMODIFIED="$2"
 #  check if /tmp/calc_in_out was modified and went unchecked
 #  if true, run the new input in gdb on the calc executable
 #  send output, error or some possibly incorrect output to
-#  the scorebot to get checked out, and log to attacker and
+#  the scorebot to get checked out, and log to attacking and
 #  defending machines.
 while [ 0 ]; do
 
