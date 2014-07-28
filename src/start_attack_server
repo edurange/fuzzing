@@ -1,13 +1,21 @@
 #!/bin/bash
 
-# get the pid of the server if it exists
-SRVR_PID=$(ps -C nc -o pid= )
+while [ 0 ]; do
 
-# if the pid is empty (server doesnt exist), start it
-# on port 2222
-if [ "$SRVR_PID" == "" ]; then
+    # get the pid of the server if it exists
+    SRVR_PID=$(ps -C redserver -o pid= )
 
-  nc -k -l 2222 > /tmp/calc_output
+    # if the pid is empty (server doesnt exist), start it
+    # on port 2222
+    if [ "$SRVR_PID" == "" ]; then
 
-fi
+      redserver
+
+    fi
+    sleep 1
+
+done
+
+SRVR_PID=""
+
 
