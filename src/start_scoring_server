@@ -1,0 +1,21 @@
+#!/bin/bash
+
+while [ 0 ]; do
+
+    # get the pid of the server if it exists
+    SRVR_PID=$(ps -C whiteserverserver -o pid= )
+
+    # if the pid is empty (server doesnt exist), start it
+    # on port 2222
+    if [ "$SRVR_PID" == "" ]; then
+
+      whiteserver
+
+    fi
+    sleep 1
+
+done
+
+SRVR_PID=""
+
+

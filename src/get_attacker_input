@@ -83,7 +83,7 @@ myout = gdb.execute("r \"$($INPUT)\"", False, True)
 
       NOW=$(date +%F--%R%p)
       grep '0x' "./$TMP_FILE" > /var/log/calc_scenario/crash_addr_$NOW.txt
-      echo "$($INPUT):0:$(cat /var/log/calc_scenario/crash_addr_$NOW.txt)" | nc $SCORING_HOST 0000 # remember to change this line according to SB specs
+      echo "$($INPUT):0:$(cat /var/log/calc_scenario/crash_addr_$NOW.txt)" | nc $SCORING_HOST 3456 # remember to change this line according to SB specs
       echo "$($INPUT):[!!] calculator crashed." | nc $ATTACKING_HOST 2222 
       NOW=""
       rm $TMP_FILE
@@ -92,7 +92,7 @@ myout = gdb.execute("r \"$($INPUT)\"", False, True)
 
       NOW=$(date +%F--%R%p)
       mv $TMP_FILE $NOW.txt
-      echo "$($INPUT):1:$(cat $NOW.txt)" | nc $SCORING_HOST 0000 # and to change this
+      echo "$($INPUT):1:$(cat $NOW.txt)" | nc $SCORING_HOST 3456 # and to change this
       cat $NOW.txt | nc $ATTACKING_HOST 2222
       NOW=""
 
