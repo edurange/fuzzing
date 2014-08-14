@@ -1,21 +1,78 @@
 #!/bin/bash
 
+FIRST_CWD=$(pwd)
+
+cd /usr/bin/
+
+INPT_OUTPT_FILE="/tmp/calc_in_out"
+OLD_TIME_MODIFIED=$1
+export LINES_READ_IN_OUT="$2"
+TIME_MODIFIED=$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")
+
 while [ 0 ]; do
 
-    # get the pid of the server if it exists
-    SRVR_PID=$(ps -C whiteserverserver -o pid= )
+  # get the pid of the server if it exists
+  SRVR_PID=$(ps -C whiteserverserver -o pid= )
 
-    # if the pid is empty (server doesnt exist), start it
-    # on port 2222
-    if [ "$SRVR_PID" == "" ]; then
+  # if the pid is empty (server doesnt exist), start it
+  # on port 2222
+  TIME_MODIFIED=$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")
+  if [ "$SRVR_PID" == "" ]; then
 
-      whiteserver
+    whiteserver $TIME_MODIFIED
+
+  fi
+
+  if [[ $LINES_READ_IN_OUT != "$(tail --lines=1 $INPT_OUTPT_FILE)"  || ( python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))" != "$OLD_TIME_MODIFIED" ) ]]; then
+
+    # check if the scorebot has been signaled to stop
+    if [ "$(tail --lines=1 $INPT_OUTPT_FILE)" == "game completed" ]; then
+
+      cleanup
+      exit
 
     fi
-    sleep 1
+
+    # parse input to calc out of the last line in 'input output pair' file
+    MOST_RECENT_LINE="$(tail --lines=1 $INPT_OUTPT_FILE)"
+
+    # get input on last line
+    INPUT="$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 2)}')"
+
+    # run input on refcalc and collect output
+    REFCALC_OUTPUT="$(echo $INPUT | /usr/bin/refcalc/calc)"
+
+    # if the refcalc output and the given output are the same, award appropriate points
+    if [ $REFCALC_OUTPUT == $(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}') ]; then
+
+    # defending team gets points and attacking team gets no points
+      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : 100" >> /tmp/scoring/points/defending.team
+      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : 0" >> /tmp/scoring/points/attacking.team
+
+    # else if the given output is a crash, award appropriate points
+    elif [ "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 1)}')" == "1" ]; then
+
+    # defending team gets no points and attacking team gets 200 pts
+      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : 0" >> /tmp/scoring/points/defending.team
+      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : 100" >> /tmp/scoring/points/attacking.team
+
+    fi  
+
+    # increment number of lines read
+    export LINES_READ_IN_OUT="$(echo "$LINES_READ_IN_OUT + 1" | /usr/bin/refcalc/calc)"
+
+  fi
 
 done
 
 SRVR_PID=""
+cd $FIRST_CWD
 
+# scorebot algorithm:
+# 1. check if the input / output file has been modified
+# 2. if so, take input and run in refcalc
+# 3. compare output of refcalc and given output
+# 4. write out score
+# 5. update static number of lines read
+#
 
