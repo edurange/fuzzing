@@ -5,9 +5,9 @@ FIRST_CWD=$(pwd)
 cd /usr/bin/
 
 INPT_OUTPT_FILE="/tmp/calc_in_out"
-OLD_TIME_MODIFIED=$1
+OLD_TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE')))"
 export LINES_READ_IN_OUT="$2"
-TIME_MODIFIED=$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")
+TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE')))"
 
 while [ 0 ]; do
 
