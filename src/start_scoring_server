@@ -19,7 +19,7 @@ while [ 0 ]; do
   TIME_MODIFIED=$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")
   if [ "$SRVR_PID" == "" ]; then
 
-    whiteserver $TIME_MODIFIED
+    whiteserver &
 
   fi
 
@@ -46,15 +46,15 @@ while [ 0 ]; do
     if [ $REFCALC_OUTPUT == $(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}') ]; then
 
     # defending team gets points and attacking team gets no points
-      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : 100" >> /tmp/scoring/points/defending.team
-      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : 0" >> /tmp/scoring/points/attacking.team
+      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING : +100" >> /tmp/scoring/answers
+      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : ATTACKING : 0" >> /tmp/scoring/answers/
 
     # else if the given output is a crash, award appropriate points
     elif [ "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 1)}')" == "1" ]; then
 
-    # defending team gets no points and attacking team gets 200 pts
-      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : 0" >> /tmp/scoring/points/defending.team
-      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : 100" >> /tmp/scoring/points/attacking.team
+    # defending team gets no points and attacking team gets 100 pts
+      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING : 0" >> /tmp/scoring/answers
+      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : ATTACKING : 100" >> /tmp/scoring/answers
 
     fi  
 

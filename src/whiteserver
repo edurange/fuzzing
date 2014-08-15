@@ -1,5 +1,7 @@
 #!/bin/bash
 
+INPT_OUTPT_FILE="/tmp/calc_in_out"
+
 if ! ps -C nc -F | grep -q "nc -l 3456"; then
 
   nc -l 3456 >> $INPT_OUTPT_FILE &
