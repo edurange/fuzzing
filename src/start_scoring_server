@@ -23,7 +23,7 @@ while [ 0 ]; do
 
   fi
 
-  if [[ $LINES_READ_IN_OUT != "$(tail --lines=1 $INPT_OUTPT_FILE)"  || ( python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))" != "$OLD_TIME_MODIFIED" ) ]]; then
+  if [[ $LINES_READ_IN_OUT != "$(tail --lines=1 $INPT_OUTPT_FILE)"  || "$( python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")" != "$OLD_TIME_MODIFIED" ]]; then
 
     # check if the scorebot has been signaled to stop
     if [ "$(tail --lines=1 $INPT_OUTPT_FILE)" == "game completed" ]; then
@@ -47,7 +47,7 @@ while [ 0 ]; do
 
     # defending team gets points and attacking team gets no points
       echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING : +100" >> /tmp/scoring/answers
-      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : ATTACKING : 0" >> /tmp/scoring/answers/
+      echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : ATTACKING : 0" >> /tmp/scoring/answers
 
     # else if the given output is a crash, award appropriate points
     elif [ "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 1)}')" == "1" ]; then
