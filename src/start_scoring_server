@@ -5,9 +5,9 @@ FIRST_CWD=$(pwd)
 cd /usr/bin/
 
 INPT_OUTPT_FILE="/tmp/calc_in_out"
-OLD_TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE')))"
-export LINES_READ_IN_OUT="$2"
-TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE')))"
+OLD_TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")"
+export LINES_READ_IN_OUT="0"
+TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")"
 
 while [ 0 ]; do
 
@@ -16,14 +16,14 @@ while [ 0 ]; do
 
   # if the pid is empty (server doesnt exist), start it
   # on port 2222
-  TIME_MODIFIED=$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")
+  TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")"
   if [ "$SRVR_PID" == "" ]; then
 
     whiteserver &
 
   fi
 
-  if [[ $LINES_READ_IN_OUT != "$(tail --lines=1 $INPT_OUTPT_FILE)"  || "$( python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")" != "$OLD_TIME_MODIFIED" ]]; then
+  if [[ $LINES_READ_IN_OUT != "$(wc -l $INPT_OUTPT_FILE)"  || "$( python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")" != "$OLD_TIME_MODIFIED" ]]; then
 
     # check if the scorebot has been signaled to stop
     if [ "$(tail --lines=1 $INPT_OUTPT_FILE)" == "game completed" ]; then
