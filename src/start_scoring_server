@@ -5,8 +5,7 @@ FIRST_CWD=$(pwd)
 cd /usr/bin/
 
 INPT_OUTPT_FILE="/tmp/calc_in_out"
-OLD_TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")"
-TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")"
+LINES_READ_IN_OUT="$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')"
 
 while [ 0 ]; do
 
@@ -15,14 +14,14 @@ while [ 0 ]; do
 
   # if the pid is empty (server doesnt exist), start it
   # on port 2222
-  TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")"
   if [ "$SRVR_PID" == "" ]; then
 
     whiteserver &
 
   fi
 
-  if [[ $LINES_READ_IN_OUT != "$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')"  || "$( python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")" != "$OLD_TIME_MODIFIED" ]]; then
+  # if the number of lines read so far is unequal to the number of lines currently in the input output file
+  if [[ $LINES_READ_IN_OUT != "$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')" ]]; then
 
     # check if the scorebot has been signaled to stop
     if [ "$(tail --lines=1 $INPT_OUTPT_FILE)" == "game completed" ]; then
@@ -58,7 +57,7 @@ while [ 0 ]; do
     fi  
 
     # increment number of lines read
-    export LINES_READ_IN_OUT="$(echo "$LINES_READ_IN_OUT + 1" | /usr/bin/refcalc/calc)"
+    LINES_READ_IN_OUT="$(echo "$LINES_READ_IN_OUT + 1" | /usr/bin/refcalc/calc)"
 
   fi
 
