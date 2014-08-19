@@ -6,7 +6,6 @@ cd /usr/bin/
 
 INPT_OUTPT_FILE="/tmp/calc_in_out"
 OLD_TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")"
-export LINES_READ_IN_OUT="0"
 TIME_MODIFIED="$(python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")"
 
 while [ 0 ]; do
@@ -23,7 +22,7 @@ while [ 0 ]; do
 
   fi
 
-  if [[ $LINES_READ_IN_OUT != "$(wc -l $INPT_OUTPT_FILE)"  || "$( python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")" != "$OLD_TIME_MODIFIED" ]]; then
+  if [[ $LINES_READ_IN_OUT != "$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')"  || "$( python -c "import os,time; print time.ctime(os.path.getmtime('$INPT_OUTPT_FILE'))")" != "$OLD_TIME_MODIFIED" ]]; then
 
     # check if the scorebot has been signaled to stop
     if [ "$(tail --lines=1 $INPT_OUTPT_FILE)" == "game completed" ]; then
@@ -43,7 +42,7 @@ while [ 0 ]; do
     REFCALC_OUTPUT="$(echo $INPUT | /usr/bin/refcalc/calc)"
 
     # if the refcalc output and the given output are the same, award appropriate points
-    if [ $REFCALC_OUTPUT == $(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}') ]; then
+    if [ $REFCALC_OUTPUT == "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}')" ]; then
 
     # defending team gets points and attacking team gets no points
       echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING : +100" >> /tmp/scoring/answers
