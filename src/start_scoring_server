@@ -34,8 +34,9 @@ while [ 0 ]; do
     # parse input to calc out of the last line in 'input output pair' file
     MOST_RECENT_LINE="$(tail --lines=1 $INPT_OUTPT_FILE)"
 
-    # get input on last line
+    # get output and input on last line
     INPUT="$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 2)}')"
+    OUTPUT="$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}')"
 
     # run input on refcalc and collect output
     REFCALC_OUTPUT="$(echo $INPUT | /usr/bin/refcalc/calc)"
@@ -47,8 +48,8 @@ while [ 0 ]; do
       echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING : +100" >> /tmp/scoring/answers
       echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : ATTACKING : 0" >> /tmp/scoring/answers
 
-    # else if the given output is a crash, award appropriate points
-    elif [ "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 1)}')" == "1" ]; then
+    # else if the given output is a crash or the refcalc output and the defending team's output are unequal, award appropriate points
+    elif [ "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 1)}')" == "1" || "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}')" != $REFCALC_OUTPUT ]; then
 
     # defending team gets no points and attacking team gets 100 pts
       echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING : 0" >> /tmp/scoring/answers
