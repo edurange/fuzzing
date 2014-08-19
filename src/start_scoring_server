@@ -49,7 +49,7 @@ while [ 0 ]; do
       echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : ATTACKING : 0" >> /tmp/scoring/answers
 
     # else if the given output is a crash or the refcalc output and the defending team's output are unequal, award appropriate points
-    elif [ "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 1)}')" == "1" || "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}')" != $REFCALC_OUTPUT ]; then
+    elif [[ "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 1)}')" == "1" || "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}')" != $REFCALC_OUTPUT ]]; then
 
     # defending team gets no points and attacking team gets 100 pts
       echo "(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING : 0" >> /tmp/scoring/answers
