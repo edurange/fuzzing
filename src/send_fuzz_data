@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ ! $# -eq 1 ]; then
+  echo "Usage: $0 [data]
+Example:
+
+sh$ $0 \"1 ++ 2\""
+  exit
+fi
+
+DEFENDING_HOST="10.0.26.130"
+
+echo "$1" | nc $DEFENDING_HOST 1337
+
