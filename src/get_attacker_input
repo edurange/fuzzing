@@ -31,12 +31,12 @@ echo "## run_calc_gdb_script.py.gdb ##
 
 " > gdb_script_front
 
-echo "if myout.count("normally") == 1:
-  print("the program finished fine!")
+echo "if myout.count(\"normally\") == 1:
+  print(\"the program finished fine!\")
 else:
-  wordlist = myout.split(" ")
+  wordlist = myout.split(\" \")
   for i, j in enumerate(wordlist):
-    if j.find("0x") != -1:
+    if j.find(\"0x\") != -1:
       print(wordlist[i])
 end
 
@@ -72,17 +72,21 @@ while [ 0 ]; do
     LASTMODIFIED=$(python -c "import os,time; print time.ctime(os.path.getmtime('$LOGFILE'))")
     INPUT="$(tail --lines=1 $LOGFILE)"
     # create the gdb script and print output to a temporary file
-    cp gdb_script_front run_calc_gdb_script_.py.gdb
+    cp gdb_script_front run_calc_gdb_script.py.gdb
+    GDB_SCRIPT_PATH=$(pwd)
+    echo "$INPUT" > input_file.txt
     echo "file $CALC_EXEC
 python
 import string
-gdb.execute("r", False, True)
-myout = gdb.write("$INPUT", gdb.STDOUT)
+import gdb
+import os
+myout = gdb.execute(\"run < input_file.txt\", False, True)
 " >> run_calc_gdb_script.py.gdb
-    cat gdb_script_backk >> run_calc_gdb_script.py.gdb
+    cat gdb_script_back >> run_calc_gdb_script.py.gdb
     TMP_FILE=$(mktemp "./temporary.XXXX")
     gdb -q -x run_calc_gdb_script.py.gdb >> $TMP_FILE
 
+    rm input_file.txt
     # see what the output file contains, i.e. whether calc crashed or not
     # and report accordingly
     if grep -q 'killed' "$TMP_FILE" ; then
