@@ -20,7 +20,11 @@ cleanup() {
 }
 
 # directory to log the calc outputs and attacker inputs on defending instance
-mkdir /var/log/fuzz_log
+if [ -f "/var/log/fuzz_log" ]; then
+
+  mkdir /var/log/fuzz_log
+
+fi
 
 # files for sandboxing of calculator and input
 echo "## run_calc_gdb_script.py.gdb ##
@@ -72,7 +76,8 @@ while [ 0 ]; do
     echo "file $CALC_EXEC
 python
 import string
-myout = gdb.execute("r \"$INPUT\"", False, True)
+gdb.execute("r", False, True)
+myout = gdb.write("$INPUT", gdb.STDOUT)
 " >> run_calc_gdb_script.py.gdb
     cat gdb_script_backk >> run_calc_gdb_script.py.gdb
     TMP_FILE=$(mktemp "./temporary.XXXX")
