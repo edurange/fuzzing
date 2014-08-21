@@ -45,7 +45,7 @@ while [ 0 ]; do
     if [ "0" == "$(wc -l /tmp/scoring/answers | awk '{print $(NF - 1)}')" ]; then
         DEFENDING_PTS="0"
         ATTACKING_PTS="0"
-    else; then
+    else
         DEFENDING_PTS="$(tail --lines=1 /tmp/scoring/answers | awk '{print $(NF - 5)}')"
         ATTACKING_PTS="$(tail --lines=1 /tmp/scoring/answers | awk '{print $(NF)}')"
     fi
