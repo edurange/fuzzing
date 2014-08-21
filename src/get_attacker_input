@@ -32,7 +32,7 @@ echo "## run_calc_gdb_script.py.gdb ##
 " > gdb_script_front
 
 echo "if myout.count(\"normally\") == 1:
-  print(\"the program finished fine!\")
+  pass
 else:
   wordlist = myout.split(\" \")
   for i, j in enumerate(wordlist):
@@ -80,7 +80,7 @@ python
 import string
 import gdb
 import os
-myout = gdb.execute(\"run < input_file.txt\", False, True)
+myout = gdb.execute(\"run < input_file.txt 2> $DEFENDING_LOG_FILE\", False, True)
 " >> run_calc_gdb_script.py.gdb
     cat gdb_script_back >> run_calc_gdb_script.py.gdb
     TMP_FILE=$(mktemp "./temporary.XXXX")
@@ -93,7 +93,7 @@ myout = gdb.execute(\"run < input_file.txt\", False, True)
 
       NOW=$(date +%m-%d--%H:%M:%S)
       grep '0x' "./$TMP_FILE" > /var/log/fuzz_log/crash_addr_$NOW.txt
-      echo "$($INPUT):0:$(cat /var/log/calc_scenario/crash_addr_$NOW.txt)" | nc $SCORING_HOST 3456 
+      echo "$($INPUT):1:$(cat /var/log/calc_scenario/crash_addr_$NOW.txt)" | nc $SCORING_HOST 3456 
       echo "$($INPUT):[!!] calculator crashed." | nc $ATTACKING_HOST 2222 
       NOW=""
       rm $TMP_FILE
@@ -102,7 +102,7 @@ myout = gdb.execute(\"run < input_file.txt\", False, True)
 
       NOW=$(date +%m-%d--%H:%M:%S)
       mv $TMP_FILE $NOW.txt
-      echo "$INPUT:1:$(cat $NOW.txt)" | nc $SCORING_HOST 3456 
+      echo "$INPUT:0:$(echo $INPUT | ./$CALC_EXEC)" | nc $SCORING_HOST 3456 
       echo "$(cat $NOW.txt)" | nc $ATTACKING_HOST 2222
       echo "$NOW: fuzz_data: $INPUT : calc_out: $(cat $NOW.txt)" >> $DEFENDING_LOG_FILE
       rm $NOW.txt
