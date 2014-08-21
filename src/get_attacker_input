@@ -54,7 +54,7 @@ ATTACKING_HOST="10.0.26.129"
 #  defending machines.
 while [ 0 ]; do
 
-  if [ python -c "import os,time; print time.ctime(os.path.getmtime('$LOGFILE'))" != "$LASTMODIFIED" ]; then
+  if [ "$(python -c "import os,time; print time.ctime(os.path.getmtime('$LOGFILE'))")" != "$LASTMODIFIED" ]; then
 
     # check if the script has been signaled to stop
     if [ "$(tail --lines=1 $LOGFILE)" == "stop getting attacker input"  ]; then
