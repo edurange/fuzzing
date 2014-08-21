@@ -76,6 +76,8 @@ while [ 0 ]; do
 
     # increment number of lines read
     LINES_READ_IN_OUT="$(echo "$LINES_READ_IN_OUT + 1" | /usr/bin/refcalc/calc)"
+    # reset current time
+    NOW=""
 
   fi
 
