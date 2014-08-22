@@ -46,7 +46,7 @@ q
 CALC_EXEC="$1" # calc exec filename
 LASTMODIFIED="$2" # last time log was modified
 LOGFILE="/tmp/calc_in_out"
-DEFENDING_LOG_FILE="/var/log/fuzz_log/timestamped_fuzz_log.txt"
+DEFENDING_LOG_FILE="/tmp/timestamped_fuzz_log.txt"
 SCORING_HOST="10.0.26.128"
 ATTACKING_HOST="10.0.26.129"
 
