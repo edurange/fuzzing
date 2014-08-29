@@ -8,7 +8,7 @@ while [ 0 ]; do
     # on port 1337
     if [ "$SRVR_PID" == "" ]; then
 
-           blueserver
+           blueserver &
 
     fi
     sleep 1

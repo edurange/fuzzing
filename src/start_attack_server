@@ -9,7 +9,7 @@ while [ 0 ]; do
     # on port 2222
     if [ "$SRVR_PID" == "" ]; then
 
-      redserver
+      redserver &
 
     fi
     sleep 1
