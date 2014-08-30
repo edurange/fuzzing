@@ -53,7 +53,7 @@ ATTACKING_HOST="10.0.26.129"
 while [ 0 ]; do
 
   # if the number of lines read so far is not equal to the total count of lines in the recordfile
-  if [ "$(equal $LASTLINEREAD \"$(wc -l $RECORDFILE | awk '{print $(NF - 1)}')\")" != "True" ]; then
+  if [ "$(equal $LASTLINEREAD "$(wc -l $RECORDFILE | awk '{print $(NF - 1)}')")" != "True" ]; then
 
     # check if the script has been signaled to stop
     if [ "$(tail --lines=1 $RECORDFILE)" == "stop getting attacker input"  ]; then
@@ -65,7 +65,7 @@ while [ 0 ]; do
     fi
 
     # check for doubles - if the attacking team is trying things twice, just ignore the input.
-    if [ grep -c "$(sed -n \"$(expr $LASTLINEREAD + 1) p\" $RECORDFILE)" != "1"  ]; then
+    if [ grep -c "$(sed -n "$(expr $LASTLINEREAD + 1) p" $RECORDFILE)" != "1"  ]; then
 
       continue
 
@@ -74,7 +74,7 @@ while [ 0 ]; do
     # update the last line read variable to the line we currently want to read
     LASTLINEREAD="$(expr $LASTLINEREAD + 1)"
     # grab attacker input
-    INPUT="$(sed -n \"$LASTLINEREAD p\" $RECORDFILE)"
+    INPUT="$(sed -n "$LASTLINEREAD p" $RECORDFILE)"
     # create the gdb script and print output to a temporary file
     cp gdb_script_front run_calc_gdb_script.py.gdb
     echo "$INPUT" > input_file.txt
@@ -107,8 +107,8 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
       rm $TMP_FILE
       NOW=$(date +%m-%d--%H:%M:%S)
       echo "$INPUT:0:$(echo $INPUT | ./$CALC_EXEC)" | nc $SCORING_HOST 3456 
-      echo "$(echo $INPUT | ./CALC_EXEC)" | nc $ATTACKING_HOST 2222
-      echo "$NOW: fuzz_data: $INPUT : calc_out: $(echo $INPUT | ./CALC_EXEC)" >> $DEFENDING_LOG_FILE
+      echo "$(echo $INPUT | ./#CALC_EXEC)" | nc $ATTACKING_HOST 2222
+      echo "$NOW: fuzz_data: $INPUT : calc_out: $(echo $INPUT | ./$CALC_EXEC)" >> $DEFENDING_LOG_FILE
       NOW=""
 
     fi

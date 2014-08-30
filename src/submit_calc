@@ -10,7 +10,9 @@ if [ ! $1 == "" ]; then
   else 	# if the calc exists, start the loop that accepts
         # attacking team input and sends it off to the scorebot
     echo "" > /tmp/calc_in_out
-    get_attacker_input $1 0 &
+    rm /tmp/calc_in_out
+    touch /tmp/calc_in_out
+    get_attacker_input $1 $(wc -l /tmp/calc_in_out | awk '{print $(NF - 1)}') &
 
   fi
 
