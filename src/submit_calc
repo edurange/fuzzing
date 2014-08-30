@@ -9,7 +9,8 @@ if [ ! $1 == "" ]; then
 
   else 	# if the calc exists, start the loop that accepts
         # attacking team input and sends it off to the scorebot
-    get_attacker_input $1 "$(python -c "import os,time; print time.ctime(os.path.getmtime('/tmp/calc_in_out'))")" &
+    echo "" > /tmp/calc_in_out
+    get_attacker_input $1 0 &
 
   fi
 

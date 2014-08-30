@@ -4,6 +4,7 @@ FIRST_CWD=$(pwd)
 
 cd /usr/bin/
 
+touch /tmp/calc_in_out
 INPT_OUTPT_FILE="/tmp/calc_in_out"
 LINES_READ_IN_OUT="$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')"
 
@@ -16,10 +17,11 @@ while [ 0 ]; do
   fi
 
   # if the number of lines read so far is unequal to the number of lines currently in the input output file
-  if [[ $LINES_READ_IN_OUT != "$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')" ]]; then
+  if [ $LINES_READ_IN_OUT != "$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')" ]; then
 
+    LINES_READ_IN_OUT=$(expr $LINES_READ_IN_OUT + 1)
     # check if the scorebot has been signaled to stop
-    if [ "$(tail --lines=1 $INPT_OUTPT_FILE)" == "game completed" ]; then
+    if [ "$(sed -n \"$LINES_READ_IN_OUT p\" $INPT_OUTPT_FILE)" == "game completed" ]; then
 
       cleanup
       exit
@@ -27,7 +29,7 @@ while [ 0 ]; do
     fi
 
     # parse input to calc out of the last line in 'input output pair' file
-    MOST_RECENT_LINE="$(tail --lines=1 $INPT_OUTPT_FILE)"
+    MOST_RECENT_LINE="$(sed -n \"$LINES_READ_IN_OUT p\" $INPT_OUTPT_FILE)"
 
     # get output and input on last line
     INPUT="$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 2)}')"

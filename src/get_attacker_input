@@ -19,13 +19,6 @@ cleanup() {
 
 }
 
-# directory to log the calc outputs and attacker inputs on defending instance
-if [ -f "/var/log/fuzz_log" ]; then
-
-  mkdir /var/log/fuzz_log
-
-fi
-
 # files for sandboxing of calculator and input
 echo "## run_calc_gdb_script.py.gdb ##
 
@@ -44,10 +37,10 @@ q
 " > gdb_script_back
 
 CALC_EXEC="$1" # calc exec filename
-LASTMODIFIED="$2" # last time log was modified
+LASTLINEREAD="$2" # last line read in recordfile 
 RECORDFILE="/tmp/calc_in_out"
 DEFENDING_LOG_FILE="/tmp/timestamped_fuzz_log.txt"
-DEFENDING_LOG_FILE="/tmp/fuzz_record.txt"
+DEFENDING_RECORD_FILE="/tmp/fuzz_record.txt"
 SCORING_HOST="10.0.26.128"
 ATTACKING_HOST="10.0.26.129"
 
@@ -59,7 +52,8 @@ ATTACKING_HOST="10.0.26.129"
 #  defending machines.
 while [ 0 ]; do
 
-  if [ "$(python -c "import os,time; print time.ctime(os.path.getmtime('$RECORDFILE'))")" != "$LASTMODIFIED" ]; then
+  # if the number of lines read so far is not equal to the total count of lines in the recordfile
+  if [ "$(equal $LASTLINEREAD \"$(wc -l $RECORDFILE | awk '{print $(NF - 1)}')\")" != "True" ]; then
 
     # check if the script has been signaled to stop
     if [ "$(tail --lines=1 $RECORDFILE)" == "stop getting attacker input"  ]; then
@@ -69,19 +63,20 @@ while [ 0 ]; do
       exit
   
     fi
+
     # check for doubles - if the attacking team is trying things twice, just ignore the input.
-    if [ grep -c "$(tail --lines=1 $RECORDFILE)" != "1"  ]; then
+    if [ grep -c "$(sed -n \"$(expr $LASTLINEREAD + 1) p\" $RECORDFILE)" != "1"  ]; then
 
       continue
 
     fi
 
-    # update current last modified time and grab attacker input
-    LASTMODIFIED=$(python -c "import os,time; print time.ctime(os.path.getmtime('$RECORDFILE'))")
-    INPUT="$(tail --lines=1 $RECORDFILE)"
+    # update the last line read variable to the line we currently want to read
+    LASTLINEREAD="$(expr $LASTLINEREAD + 1)"
+    # grab attacker input
+    INPUT="$(sed -n \"$LASTLINEREAD p\" $RECORDFILE)"
     # create the gdb script and print output to a temporary file
     cp gdb_script_front run_calc_gdb_script.py.gdb
-    GDB_SCRIPT_PATH=$(pwd)
     echo "$INPUT" > input_file.txt
     echo "file $CALC_EXEC
 python
@@ -103,17 +98,17 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
       grep '0x' "./$TMP_FILE" > /var/log/crash_addr_$NOW.txt
       echo "$($INPUT):1:$(cat /var/log/crash_addr_$NOW.txt)" | nc $SCORING_HOST 3456 
       echo "$($INPUT):[!!] calculator crashed." | nc $ATTACKING_HOST 2222 
+      echo "$NOW: fuzz_data: $INPUT : [!!] calculator crashed." >> $DEFENDING_LOG_FILE
       NOW=""
       rm $TMP_FILE
 
     else
 
+      rm $TMP_FILE
       NOW=$(date +%m-%d--%H:%M:%S)
-      mv $TMP_FILE $NOW.txt
       echo "$INPUT:0:$(echo $INPUT | ./$CALC_EXEC)" | nc $SCORING_HOST 3456 
-      echo "$(cat $NOW.txt)" | nc $ATTACKING_HOST 2222
-      echo "$NOW: fuzz_data: $INPUT : calc_out: $(cat $NOW.txt)" >> $DEFENDING_LOG_FILE
-      rm $NOW.txt
+      echo "$(echo $INPUT | ./CALC_EXEC)" | nc $ATTACKING_HOST 2222
+      echo "$NOW: fuzz_data: $INPUT : calc_out: $(echo $INPUT | ./CALC_EXEC)" >> $DEFENDING_LOG_FILE
       NOW=""
 
     fi
@@ -121,7 +116,6 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
     rm run_calc_gdb_script.py.gdb
 
   fi
-  sleep .5
 
 done
 
