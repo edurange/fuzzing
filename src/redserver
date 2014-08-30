@@ -1,6 +1,0 @@
-#!/bin/bash
-
-if ! ps -C nc -F | grep -q "nc -l 2222"; then
-    nc -l 2222 >> /tmp/calc_output &
-fi
-

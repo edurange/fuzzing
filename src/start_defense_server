@@ -1,18 +1,9 @@
 #!/bin/bash
 
-while [ 0 ]; do
-    # get the pid of the server if it exists
-    SRVR_PID=$(ps -C nc -o pid= )
+# if the pid is empty (server doesnt exist), start it
+# on port 1337
+if ! ps -C nc -F | grep -q "nc -l -k 1337"; then
+    nc -l -k 1337 >> /tmp/calc_in_out &
+fi
 
-    # if the pid is empty (server doesnt exist), start it
-    # on port 1337
-    if [ "$SRVR_PID" == "" ]; then
-
-           blueserver &
-
-    fi
-    sleep 1
-done
-
-SRVR_PID=""
 

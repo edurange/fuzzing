@@ -9,14 +9,9 @@ LINES_READ_IN_OUT="$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')"
 
 while [ 0 ]; do
 
-  # get the pid of the server if it exists
-  SRVR_PID=$(ps -C nc -o pid= )
+  if ! ps -C nc -F | grep -q "nc -l -k 3456"; then
 
-  # if the pid is empty (server doesnt exist), start it
-  # on port 2222
-  if [ "$SRVR_PID" == "" ]; then
-
-    whiteserver &
+    nc -l -k 3456 >> $INPT_OUTPT_FILE &
 
   fi
 
@@ -52,14 +47,15 @@ while [ 0 ]; do
 
     NOW=$(date +%m-%d--%H:%M:%S)
     # if the refcalc output and the given output are the same, award appropriate points
-    if [ "$REFCALC_OUTPUT" == "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}')" ]; then
+    if [ $(equal $REFCALC_OUTPUT $(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}')) == "True" ]; then
 
     # defending team gets points and attacking team gets no points
       DEFENDING_PTS="$(echo "$DEFENDING_PTS + 10" | /usr/bin/refcalc/calc)"
       echo "$NOW:(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
 
     # else if the refcalc output and the defending team's output are unequal, award appropriate points
-    elif [ "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}')" != "$REFCALC_OUTPUT" ]; then
+    elif [ $(equal $(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}') $REFCALC_OUTPUT) == "False" ]; then
+
 
       # defending team gets no points and attacking team gets 10 pts
       ATTACKING_PTS="$(echo "$ATTACKING_PTS + 10" | /usr/bin/refcalc/calc)"

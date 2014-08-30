@@ -1,6 +1,0 @@
-#!/bin/bash
-
-if ! ps -C nc -F | grep -q "nc -l 1337"; then
-    nc -l 1337 >> /tmp/calc_in_out &
-fi
-
