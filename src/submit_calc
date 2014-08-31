@@ -21,10 +21,3 @@ else
   echo "Usage: $0 calculator_filename"
 
 fi
-
-#
-# Calc Scenario Scorebot Submition Algorithm --
-# 1. see if we were given a calculator, if so - run
-#    the get_attacker_input script in the background
-#
-

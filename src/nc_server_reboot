@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ ! $# -eq 0 ]; then
+
+  echo "wrong # of args.
+usage: $0"
+  exit
+
+fi
+PID=$(ps -C nc -o pid=)
+kill $PID
+

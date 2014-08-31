@@ -65,11 +65,11 @@ while [ 0 ]; do
     fi
 
     # check for doubles - if the attacking team is trying things twice, just ignore the input.
-    if [ grep -c "$(sed -n "$(expr $LASTLINEREAD + 1) p" $RECORDFILE)" != "1"  ]; then
+#    if [ "$(grep -c "$(sed -n "$(expr $LASTLINEREAD + 1) p" $RECORDFILE)")" != "1"  ]; then
 
-      continue
+#      continue
 
-    fi
+#    fi
 
     # update the last line read variable to the line we currently want to read
     LASTLINEREAD="$(expr $LASTLINEREAD + 1)"
@@ -96,8 +96,8 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
 
       NOW=$(date +%m-%d--%H:%M:%S)
       grep '0x' "./$TMP_FILE" > /var/log/crash_addr_$NOW.txt
-      echo "$($INPUT):1:$(cat /var/log/crash_addr_$NOW.txt)" | nc $SCORING_HOST 3456 
-      echo "$($INPUT):[!!] calculator crashed." | nc $ATTACKING_HOST 2222 
+      echo "$INPUT:1:$(cat /var/log/crash_addr_$NOW.txt)" | nc $SCORING_HOST 3456 
+      echo "$INPUT:[!!] calculator crashed." | nc $ATTACKING_HOST 2222 
       echo "$NOW: fuzz_data: $INPUT : [!!] calculator crashed." >> $DEFENDING_LOG_FILE
       NOW=""
       rm $TMP_FILE
@@ -106,16 +106,18 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
 
       rm $TMP_FILE
       NOW=$(date +%m-%d--%H:%M:%S)
-      echo "$INPUT:0:$(echo $INPUT | ./$CALC_EXEC)" | nc $SCORING_HOST 3456 
-      echo "$(echo $INPUT | ./#CALC_EXEC)" | nc $ATTACKING_HOST 2222
-      echo "$NOW: fuzz_data: $INPUT : calc_out: $(echo $INPUT | ./$CALC_EXEC)" >> $DEFENDING_LOG_FILE
+      OUTPUT="$(echo $INPUT | ./$CALC_EXEC)"
+      echo "$INPUT:0:$OUTPUT" | nc $SCORING_HOST 3456 
+      echo "$OUTPUT" | nc $ATTACKING_HOST 2222
+      echo "$NOW: fuzz_data: $INPUT : calc_out: $OUTPUT" >> $DEFENDING_LOG_FILE
       NOW=""
+      OUTPUT=""
 
     fi
 
     rm run_calc_gdb_script.py.gdb
 
-  fi
+ fi
 
 done
 
