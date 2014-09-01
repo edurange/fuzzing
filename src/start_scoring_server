@@ -3,5 +3,6 @@
 
 # This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
 
+touch /tmp/calc_in_out
 scoring_listener &
 

@@ -5,8 +5,7 @@
 
 if [ ! $# -eq 0 ]; then
 
-  echo "wrong # of args.
-usage: $0"
+  echo "wrong # of args."
   exit
 
 fi
