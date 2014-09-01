@@ -118,6 +118,7 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
     rm run_calc_gdb_script.py.gdb
 
  fi
+ sleep .8
 
 done
 

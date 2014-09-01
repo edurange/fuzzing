@@ -80,6 +80,7 @@ while [ 0 ]; do
     NOW=""
 
   fi
+  sleep .8
 
 done
 

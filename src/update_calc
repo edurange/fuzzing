@@ -9,7 +9,7 @@ usage: $0 path_to_calc_to_submit"
 fi
 
 PID=$(ps -C get_attacker_input -o pid=)
-kill PID
+kill $PID
 rm /tmp/calc_in_out
 touch /tmp/calc_in_out
 submit_calc $1
