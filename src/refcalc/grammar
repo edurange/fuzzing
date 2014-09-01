@@ -1,9 +1,0 @@
-LV 1 GRAMMAR
-============
-
-EXP  -> TERM | EXP OP TERM
-TERM -> FAC | FAC OP FAC
-FAC  -> DIG {DIG}
-OP   -> + | - | * | / | ^
-DIG  -> 0 | 1 | .. | 9
-
