@@ -121,7 +121,10 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
 
       rm $TMP_FILE
       NOW="$(date +%m-%d--%H:%M:%S)"
-      OUTPUT="$(./$CALC_EXEC < input_file.txt)"
+      OUTPUT="$(./$CALC_EXEC < input_file.txt 2> stderror.txt)"
+      if [ $OUTPUT == "" ]; then
+        OUTPUT="$(cat stderror.txt)"
+      fi
       echo "$INPUT:0:$OUTPUT" | nc $SCORING_HOST 3456 
       echo "$OUTPUT" | nc $ATTACKING_HOST 2222
       echo "$NOW: fuzz_data: $INPUT : calc_out: $OUTPUT" >> $DEFENDING_LOG_FILE
