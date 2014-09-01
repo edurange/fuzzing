@@ -1,4 +1,8 @@
 #!/bin/bash
+# submit_calc by David Weinman <david@weinman.com>
+
+# This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
+
 
 if [ ! $1 == "" ]; then
 
@@ -9,15 +13,12 @@ if [ ! $1 == "" ]; then
 
   else 	# if the calc exists, start the loop that accepts
         # attacking team input and sends it off to the scorebot
-    echo "" > /tmp/calc_in_out
-    rm /tmp/calc_in_out
-    touch /tmp/calc_in_out
-    get_attacker_input $1 $(wc -l /tmp/calc_in_out | awk '{print $(NF - 1)}') &
+    get_attacker_input $1 &
 
   fi
 
 else
 
-  echo "Usage: $0 calculator_filename"
+  echo "Usage: submit_calc calculator_filename"
 
 fi

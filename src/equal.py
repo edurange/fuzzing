@@ -10,6 +10,10 @@ are equal to the precision given and
 false if not.
 """
 
+"""
+This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
+"""
+
 import sys
 
 def equal_precise(n1, n2, p):

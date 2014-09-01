@@ -1,11 +1,16 @@
 #!/bin/bash
+# scoring_loop by David Weinman <david@weinman.com>
+
+# This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
 
 FIRST_CWD=$(pwd)
-
-cd /usr/bin/
+SCOREDIRNAME="scoring_$(date +%m_%d__%H_%M)"
+mkdir $SCOREDIRNAME
+cd $SCOREDIRNAME
 
 touch /tmp/calc_in_out
 INPT_OUTPT_FILE="/tmp/calc_in_out"
+ERRLOG="./scoring_errlog.txt"
 LINES_READ_IN_OUT="$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')"
 
 while [ 0 ]; do
@@ -26,13 +31,15 @@ while [ 0 ]; do
     MOST_RECENT_LINE="$(sed -n "$LINES_READ_IN_OUT p" $INPT_OUTPT_FILE)"
 
     # get output and input on last line
-    INPUT="$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 2)}')"
-    OUTPUT="$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF)}')"
+    INPUT="$(echo "$MOST_RECENT_LINE" | awk -F: '{print $(NF - 2)}')"
+    OUTPUT="$(echo "$MOST_RECENT_LINE" | awk -F: '{print $(NF)}')"
 
     # run input on refcalc and collect output
-    REFCALC_OUTPUT="$(echo $INPUT | /usr/bin/refcalc/calc)"
+    REFCALC_OUTPUT="$(echo "$INPUT" | /usr/bin/refcalc/calc)"
 
-    # 
+    # find out what the points are currently, if there isn't any points in
+    # /tmp/scoring/answers then assign zero to each team, if there is then get
+    # the most current points acquired 
     if [ "0" == "$(wc -l /tmp/scoring/answers | awk '{print $(NF - 1)}')" ]; then
         DEFENDING_PTS="0"
         ATTACKING_PTS="0"
@@ -43,14 +50,14 @@ while [ 0 ]; do
 
     NOW=$(date +%m-%d--%H:%M:%S)
     # if the refcalc output and the given output are the same, award appropriate points
-    if [ $(equal $REFCALC_OUTPUT $OUTPUT) == "True" ]; then
+    if [ $(equal $REFCALC_OUTPUT $OUTPUT 2> $ERRLOG) == "True" ]; then
 
     # defending team gets points and attacking team gets no points
       DEFENDING_PTS="$(echo "$DEFENDING_PTS + 10" | /usr/bin/refcalc/calc)"
       echo "$NOW:(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
 
     # else if the refcalc output and the defending team's output are unequal, award appropriate points
-    elif [ $(equal $OUTPUT $REFCALC_OUTPUT) == "False" ]; then
+    elif [[ $(equal $OUTPUT $REFCALC_OUTPUT 2> $ERRLOG) == "False" || $REFCALC_OUTPUT != $OUTPUT ]]; then
 
 
       # defending team gets no points and attacking team gets 10 pts
@@ -80,12 +87,4 @@ done
 
 SRVR_PID=""
 cd $FIRST_CWD
-
-# scorebot algorithm:
-# 1. check if the input / output file has been modified
-# 2. if so, take input and run in refcalc
-# 3. compare output of refcalc and given output
-# 4. write out score
-# 5. update static number of lines read
-#
 

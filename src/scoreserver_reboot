@@ -10,6 +10,6 @@ usage: $0"
   exit
 
 fi
-PID=$(ps -C nc -o pid=)
+PID=$(ps -C scoring_listener -o pid=)
 kill $PID
 

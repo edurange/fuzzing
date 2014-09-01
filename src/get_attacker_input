@@ -1,10 +1,13 @@
 #!/bin/bash
+# get_attacker_input by David Weinman <david@weinman.com>
+
+# This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
 
 # if the given arument count isn't equal to two then the script isn't being used correctly
 # 		-> print usage and exit
-if [ ! $# -eq 2 ]; then
+if [ ! $# -eq 1 ]; then
 
-  echo "Usage: get_attacker_input calc lmodtime
+  echo "Usage: get_attacker_input calc
 
 calc: path to calculator executable
 lmodtime: last time record was modified
@@ -15,11 +18,11 @@ fi
 
 cleanup() {
 
-  rm gdb_script_front gdb_script_back run_calc_gdb_script.py.gdb
+  rm gdb_script_front gdb_script_back run_calc_gdb_script.py.gdb input_file.txt
 
 }
 
-# files for sandboxing of calculator and input
+# make files for sandboxing of calculator and input
 echo "## run_calc_gdb_script.py.gdb ##
 
 " > gdb_script_front
@@ -37,7 +40,9 @@ q
 " > gdb_script_back
 
 CALC_EXEC="$1" # calc exec filename
-LASTLINEREAD="$2" # last line read in recordfile 
+rm /tmp/calc_in_out
+touch /tmp/calc_in_out
+LASTLINEREAD="$(wc -l /tmp/calc_in_out | awk '{print $(NF - 1)}')" # last line read in recordfile 
 RECORDFILE="/tmp/calc_in_out"
 DEFENDING_LOG_FILE="/tmp/timestamped_fuzz_log.txt"
 DEFENDING_RECORD_FILE="/tmp/fuzz_record.txt"
@@ -75,9 +80,16 @@ while [ 0 ]; do
     LASTLINEREAD="$(expr $LASTLINEREAD + 1)"
     # grab attacker input
     INPUT="$(sed -n "$LASTLINEREAD p" $RECORDFILE)"
-    # create the gdb script and print output to a temporary file
+
+    # --------> create the gdb script and print output to a temporary file <-------------
+
+    # first copy the saved first part of the script to our new script file
     cp gdb_script_front run_calc_gdb_script.py.gdb
+    # print to our record file to stamp the output it will soon recieve from the process running in gdb
+    echo "\n\n -- record for $(date +%m-%d--%H:%M:%S) with input: $INPUT -- \n" >> $DEFENDING_RECORD_FILE
+    # copy our input to a text file which will later be piped into our calc executable in gdb
     echo "$INPUT" > input_file.txt
+    # create the middle part to our gdb script and append it to the script file
     echo "file $CALC_EXEC
 python
 import string
@@ -85,16 +97,19 @@ import gdb
 import os
 myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDING_RECORD_FILE\", False, True)
 " >> run_calc_gdb_script.py.gdb
+    # append the back side of our script from our saved last part of the script to our new script file
     cat gdb_script_back >> run_calc_gdb_script.py.gdb
+    # create a temporary file to recieve the ourput of our python / gdb script
     TMP_FILE=$(mktemp "./temporary.XXXX")
+    # run gdb and pipe the output to our temporary file
     gdb -q -x run_calc_gdb_script.py.gdb >> $TMP_FILE
 
-    rm input_file.txt
+
     # see what the output file contains, i.e. whether calc crashed or not
     # and report accordingly
     if grep -q 'killed' "$TMP_FILE" ; then
 
-      NOW=$(date +%m-%d--%H:%M:%S)
+      NOW="$(date +%m-%d--%H:%M:%S)"
       grep '0x' "./$TMP_FILE" > /var/log/crash_addr_$NOW.txt
       echo "$INPUT:1:$(cat /var/log/crash_addr_$NOW.txt)" | nc $SCORING_HOST 3456 
       echo "$INPUT:[!!] calculator crashed." | nc $ATTACKING_HOST 2222 
@@ -105,8 +120,8 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
     else
 
       rm $TMP_FILE
-      NOW=$(date +%m-%d--%H:%M:%S)
-      OUTPUT="$(echo $INPUT | ./$CALC_EXEC)"
+      NOW="$(date +%m-%d--%H:%M:%S)"
+      OUTPUT="$(./$CALC_EXEC < input_file.txt)"
       echo "$INPUT:0:$OUTPUT" | nc $SCORING_HOST 3456 
       echo "$OUTPUT" | nc $ATTACKING_HOST 2222
       echo "$NOW: fuzz_data: $INPUT : calc_out: $OUTPUT" >> $DEFENDING_LOG_FILE
@@ -121,4 +136,5 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
  sleep 2
 
 done
+
 

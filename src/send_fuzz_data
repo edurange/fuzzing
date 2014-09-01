@@ -1,4 +1,8 @@
 #!/bin/bash
+# send_fuzz_data by David Weinman <david@weinman.com>
+
+# This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
+
 
 if [ ! $# -eq 1 ]; then
   echo "Usage: $0 [data]

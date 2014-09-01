@@ -1,9 +1,7 @@
 #!/bin/bash
+# start_scoring_server by David Weinman <david@weinman.com>
 
-# if the pid is empty (server doesnt exist), start it
-# on port 2222
-if ! ps -C nc -F | grep -q "nc -l -k 3456"; then
-	nc -l -k 3456 >> /tmp/calc_in_out &
-fi
+# This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
 
+scoring_listener &
 

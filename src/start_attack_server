@@ -1,4 +1,8 @@
 #!/bin/bash
+# start_attack_server by David Weinman <david@weinman.com>
+
+# This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
+
 
 # if the pid is empty (server doesnt exist), start it
 # on port 2222

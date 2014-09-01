@@ -1,0 +1,36 @@
+#!/usr/bin/python
+"""
+  scoring_listener
+  by David Weinman
+  9/1/14, 4:30a
+
+---
+listens for any data on
+port 3456 to pipe it to
+a static file upon recieval
+"""
+
+import os
+from socket import *
+
+MAXDATASIZE = 5000
+filename = "/tmp/calc_in_out"
+
+serverPort = 3456
+
+serverSocket = socket(AF_INET, SOCK_STREAM)
+
+serverSocket.bind(('', serverPort))
+
+serverSocket.listen(1)
+
+print('listening on %d' % serverPort)
+
+while 1:
+	connectionSocket, addr = serverSocket.accept()
+	data = connectionSocket.recv(MAXDATASIZE)
+	fh = open(filename, "a")
+	fh.write(data + '\n')
+	fh.close()
+	connectionSocket.close()
+
