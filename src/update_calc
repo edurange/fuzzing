@@ -10,7 +10,8 @@ fi
 
 PID=$(ps -C get_attacker_input -o pid=)
 kill PID
-echo "" > /tmp/calc_in_out
+rm /tmp/calc_in_out
+touch /tmp/calc_in_out
 submit_calc $1
 PID=""
 
