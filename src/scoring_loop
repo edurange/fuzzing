@@ -72,7 +72,7 @@ while [ 0 ]; do
       ATTACKING_PTS="$(echo "$ATTACKING_PTS + 50" | /usr/bin/refcalc/calc)"
       echo "$NOW:(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
 
-    elif [ $REFCALC_STDERR == $OUTPUT ]; then
+    elif [[ ( $REFCALC_STDERR != "" ) && ( $OUTPUT != "" ) ]]; then
 
     # defending team gets points and attacking team gets no points
       DEFENDING_PTS="$(echo "$DEFENDING_PTS + 10" | /usr/bin/refcalc/calc)"
