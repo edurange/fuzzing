@@ -1,0 +1,53 @@
+#!/usr/bin/python
+"""
+  doubles_s_and_r
+  by David Weinman
+  9/1/14, 6:36p
+
+---
+searches for doubles in the text for each line in a given filename
+and deletes those lines in the file (leaving the first occurence in tact).
+also, prints True if any doubles were found and false if not.
+"""
+
+import sys
+
+doubleswerefound = False
+
+def list_duplicates_of(seq,item):
+    start_at = -1
+    locs = []
+    while True:
+        try:
+            loc = seq.index(item,start_at+1)
+        except ValueError:
+            break
+        else:
+            locs.append(loc)
+            start_at = loc
+    return locs
+
+fname = sys.argv[1]
+fh = open(fname, 'r')
+flines = list(fh)
+
+line_list = []
+
+for i in flines:
+	line_list.append(list_duplicates_of( flines, i ))
+
+for i in line_list:
+	if len(i) > 1: # if there are any duplicates
+		if not doubleswerefound:
+			doubleswerefound = True
+		dups = i[1:] # assign a list of their line numbers to another list
+		for j in dups:
+			flines[j] = ''
+
+with open(fname, 'w') as fh:
+	fh.writelines(flines)
+
+if doubleswerefound:
+	print "True"
+else:
+	print "False"

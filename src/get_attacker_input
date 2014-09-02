@@ -70,11 +70,12 @@ while [ 0 ]; do
     fi
 
     # check for doubles - if the attacking team is trying things twice, just ignore the input.
-#    if [ "$(grep -c "$(sed -n "$(expr $LASTLINEREAD + 1) p" $RECORDFILE)")" != "1"  ]; then
+    if [ $(doubles_s_and_r $RECORDFILE) == "True"  ]; then
 
-#      continue
+      echo "RECIEVED DOUBLE OF FUZZ DATA, IGNORING AND MOVING ON.." | nc $ATTACKING_HOST 2222
+      continue
 
-#    fi
+    fi
 
     # update the last line read variable to the line we currently want to read
     LASTLINEREAD="$(expr $LASTLINEREAD + 1)"
