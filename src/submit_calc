@@ -15,6 +15,12 @@ if [ ! $1 == "" ]; then
         # attacking team input and sends it off to the scorebot
     get_attacker_input $1 2> get_input_log.txt &
 
+    if ! ps -C nc -F | grep -q "nc -l -k 1337"; then
+
+      start_defense_server
+
+    fi
+
   fi
 
 else

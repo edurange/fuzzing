@@ -50,26 +50,27 @@ while [ 0 ]; do
     fi
 
     NOW=$(date +%m-%d--%H:%M:%S)
+    PRETTY_INPUT="$(blacklist_replace "$INPUT")"
     # if the refcalc output and the given output are the same, award appropriate points
     if [ $(equal "$REFCALC_OUTPUT" "$OUTPUT" 2> $ERRLOG) == "True" ]; then
 
     # defending team gets points and attacking team gets no points
       DEFENDING_PTS="$(echo "$DEFENDING_PTS + 10" | /usr/bin/refcalc/calc)"
-      echo "$NOW:(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
+      echo "$NOW:(INPUT: $PRETTY_INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
 
     # else if both the refcalc and the defending team gave errors, defending team gets pts
     elif [[ ( "$REFCALC_STDERR" != "" ) && $(echo "$OUTPUT" | grep -q -i 'error') ]]; then
 
     # defending team gets points and attacking team gets no points
       DEFENDING_PTS="$(echo "$DEFENDING_PTS + 10" | /usr/bin/refcalc/calc)"
-      echo "$NOW:(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
+      echo "$NOW:(INPUT: $PRETTY_INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
 
     # else if the given output is a crash
     elif [ "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 1)}')" == "1" ]; then
 
       # attacking team gets 50pts
       ATTACKING_PTS="$(echo "$ATTACKING_PTS + 50" | /usr/bin/refcalc/calc)"
-      echo "$NOW:(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
+      echo "$NOW:(INPUT: $PRETTY_INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
 
     # else if the refcalc output and the defending team's output are unequal, award appropriate points
     elif [[ $(equal "$OUTPUT" "$REFCALC_OUTPUT" 2> $ERRLOG) == "False" || "" == $OUTPUT ]]; then
@@ -77,7 +78,7 @@ while [ 0 ]; do
 
       # defending team gets no points and attacking team gets 10 pts
       ATTACKING_PTS="$(echo "$ATTACKING_PTS + 10" | /usr/bin/refcalc/calc)"
-      echo "$NOW:(INPUT: $INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
+      echo "$NOW:(INPUT: $PRETTY_INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
 
     fi
 
