@@ -100,8 +100,9 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
 " >> run_calc_gdb_script.py.gdb
     # append the back side of our script from our saved last part of the script to our new script file
     cat gdb_script_back >> run_calc_gdb_script.py.gdb
-    # create a temporary file to recieve the ourput of our python / gdb script
+    # create a temporary file to recieve the output of our python / gdb script
     TMP_FILE=$(mktemp "./temporary.XXXX")
+
     # run gdb and pipe the output to our temporary file
     gdb -q -x run_calc_gdb_script.py.gdb >> $TMP_FILE
 
@@ -111,10 +112,10 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
     if grep -q 'killed' "$TMP_FILE" ; then
 
       NOW="$(date +%m-%d--%H:%M:%S)"
-      grep '0x' "./$TMP_FILE" > /var/log/crash_addr_$NOW.txt
-      echo "$INPUT:1:$(cat /var/log/crash_addr_$NOW.txt)" | nc $SCORING_HOST 3456 
+      grep '0x' "./$TMP_FILE" > /tmp/crash_addr_$NOW.txt
+      echo "$INPUT:1:$(cat /tmp/crash_addr_$NOW.txt)" | nc $SCORING_HOST 3456 
       echo "$INPUT:[!!] calculator crashed." | nc $ATTACKING_HOST 2222 
-      echo "$NOW: fuzz data: $INPUT : [!!] calculator crashed, crash address: $(cat /var/log/crash_addr_$NOW.txt)." >> $DEFENDING_LOG_FILE
+      echo "$NOW: fuzz data: $INPUT : [!!] calculator crashed, crash address: $(cat /tmp/crash_addr_$NOW.txt)." >> $DEFENDING_LOG_FILE
       NOW=""
       rm $TMP_FILE
 
