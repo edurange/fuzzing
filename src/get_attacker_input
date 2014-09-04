@@ -114,9 +114,9 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
       NOW="$(date +%m-%d--%H:%M:%S)"
       grep '0x' "./$TMP_FILE" > /tmp/crash_addr_$NOW.txt
       echo "$INPUT:1:$(cat /tmp/crash_addr_$NOW.txt)" | nc $SCORING_HOST 3456 
-      FILTERED_INPUT="$(blacklist_replace "$INPUT")"
+      PRETTY_INPUT="$(blacklist_replace "$INPUT")"
       echo "$INPUT:[!!] calculator crashed." | nc $ATTACKING_HOST 2222 
-      echo "$NOW: fuzz data: $INPUT : [!!] calculator crashed, crash address: $(cat /tmp/crash_addr_$NOW.txt)." >> $DEFENDING_LOG_FILE
+      echo "$NOW: fuzz data: $PRETTY_INPUT : [!!] calculator crashed, crash address: $(cat /tmp/crash_addr_$NOW.txt)." >> $DEFENDING_LOG_FILE
       NOW=""
       rm $TMP_FILE
 
@@ -129,8 +129,9 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
         OUTPUT="$(cat stderror.txt)"
       fi
       echo "$INPUT:0:$OUTPUT" | nc $SCORING_HOST 3456 
-      echo "$NOW: fuzz_data: $INPUT : calc_out: $OUTPUT" | nc $ATTACKING_HOST 2222
-      echo "$NOW: fuzz_data: $INPUT : calc_out: $OUTPUT" >> $DEFENDING_LOG_FILE
+      PRETTY_INPUT="$(blacklist_replace "$INPUT")"
+      echo "$NOW: fuzz_data: $PRETTY_INPUT : calc_out: $OUTPUT" | nc $ATTACKING_HOST 2222
+      echo "$NOW: fuzz_data: $PRETTY_INPUT : calc_out: $OUTPUT" >> $DEFENDING_LOG_FILE
       NOW=""
       OUTPUT=""
 
