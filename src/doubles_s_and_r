@@ -47,7 +47,4 @@ for i in line_list:
 with open(fname, 'w') as fh:
 	fh.writelines(flines)
 
-if doubleswerefound:
-	print "True"
-else:
-	print "False"
+print(str(doubleswerefound))
