@@ -1,5 +1,5 @@
-fuzzy_challenge
-===============
+Edurange Fuzzing Scenario
+=========================
 
 A fuzzing challenge for the Dynamic Wargaming Framework - EDURange
 
