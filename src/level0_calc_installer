@@ -1,0 +1,18 @@
+#!/bin/bash
+# level0_calc_installer by David Weinman <david@weinman.com>
+
+# This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
+
+if [ ! $1 == "" ]; then
+
+  wget $1
+  gcc $1 -o calc $2
+  submit_calc $2
+
+else
+
+  echo "[!] argcount error. "
+  exit
+
+fi
+

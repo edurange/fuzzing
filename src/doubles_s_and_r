@@ -10,6 +10,10 @@ and deletes those lines in the file (leaving the first occurence in tact).
 also, prints True if any doubles were found and false if not.
 """
 
+"""
+This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
+"""
+
 import sys
 
 doubleswerefound = False

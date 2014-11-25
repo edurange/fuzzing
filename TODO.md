@@ -6,3 +6,5 @@ TODO!
 * make all scoring system printouts formatted for clarity and readability. this might be something like: * * or ( * * )
 * update instructor docs
 * add reference calc code to repo
+* figure out how a flag or no flag should be passed to calc installer, perhaps this is something that should be pre-configured, or maybe install command is an argument itself!
+
