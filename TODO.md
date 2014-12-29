@@ -8,3 +8,4 @@ TODO!
 * add reference calc code to repo
 * figure out how a flag or no flag should be passed to calc installer, perhaps this is something that should be pre-configured, or maybe install command is an argument itself!
 * fix blacklist replace - I think I found a bug where it does not replace the vals?
+* fix scoreboard doubles phenominon?
