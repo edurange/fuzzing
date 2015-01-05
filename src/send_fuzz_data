@@ -5,10 +5,10 @@
 
 
 if [ ! $# -eq 1 ]; then
-  echo "Usage: $0 [data]
+  echo "Usage: send_fuzz_data <data>
 Example:
 
-sh$ $0 \"1 ++ 2\""
+sh$ send_fuzz_data \"1 ++ 2\""
   exit
 fi
 

@@ -3,15 +3,17 @@
 
 # This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
 
-if [ ! $1 == "" ]; then
+if [ $# -eq 2 ]; then
 
   wget $1
-  gcc $1 -o calc $2
+  FNAME="$2.c"
+  gcc $FNAME -o $2 -lm
   submit_calc $2
 
 else
 
   echo "[!] argcount error. "
+  echo "Usage: level0_calc_installer <link_for_calc> <desired_calc_executable_name>"
   exit
 
 fi

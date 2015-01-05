@@ -6,6 +6,7 @@
 if [ ! $# -eq 0 ]; then
 
   echo "wrong # of args."
+  echo "Usage: defending_server_reboot or attacking_server_reboot"
   exit
 
 fi

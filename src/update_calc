@@ -7,7 +7,7 @@
 if [ ! $# -eq 1 ]; then
 
   echo "wrong # of args.
-usage: $0 path_to_calc_to_submit"
+usage: update_calc </path/to/calc_filename>"
   exit
 
 fi

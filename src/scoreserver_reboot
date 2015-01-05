@@ -6,7 +6,7 @@
 if [ ! $# -eq 0 ]; then
 
   echo "wrong # of args.
-usage: $0"
+usage: scoring_server_reboot"
   exit
 
 fi
