@@ -1,6 +1,11 @@
 #!/bin/bash
 # get_attacker_input by David Weinman <david@weinman.com>
 
+# grabs inputs from the designated file ($RECORDFILE), runs them through the submitted
+# calculator executable ($CALC_EXEC) with a gdb/py script, parses the gdb/py script output
+# for signs that it crashed and sends off either the output, error or crash address
+# to the scoring host and the attacking team. (forever loop)
+
 # This file is licensed under The DO WHAT THE FUCK YOU WANT TO License, see LICENSE for details.
 
 # if the given arument count isn't equal to two then the script isn't being used correctly
@@ -18,7 +23,7 @@ fi
 
 cleanup() {
 
-  rm gdb_script_front gdb_script_back run_calc_gdb_script.py.gdb input_file.txt
+  rm -f gdb_script_front gdb_script_back run_calc_gdb_script.py.gdb input_file.txt
 
 }
 
@@ -137,7 +142,7 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
 
     fi
 
-    rm run_calc_gdb_script.py.gdb
+    rm -f run_calc_gdb_script.py.gdb
 
  else
 

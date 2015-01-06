@@ -14,7 +14,7 @@ fi
 
 PID=$(ps -C get_attacker_input -o pid=)
 kill $PID
-rm gdb_script_front gdb_script_back run_calc_gdb_script.py.gdb input_file.txt
+rm -f gdb_script_front gdb_script_back run_calc_gdb_script.py.gdb input_file.txt
 rm /tmp/calc_in_out
 touch /tmp/calc_in_out
 submit_calc $1
