@@ -19,8 +19,8 @@ LINES_READ_IN_OUT="$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')"
 
 while [ 0 ]; do
 
-  # if the number of lines read so far is unequal to the number of lines currently in the input output file
-  if [ $LINES_READ_IN_OUT != "$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')" ]; then
+  # if the number of lines read so far is less than the number of lines currently in the input output file
+  if [ $(expr "$LINES_READ_IN_OUT" \< "$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')") = 1 ]; then
 
     LINES_READ_IN_OUT=$(expr $LINES_READ_IN_OUT + 1)
     # check if the scorebot has been signaled to stop
