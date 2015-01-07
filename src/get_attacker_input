@@ -62,8 +62,8 @@ ATTACKING_HOST="10.0.26.129"
 #  defending machines.
 while [ 0 ]; do
 
-  # if the number of lines read so far is not equal to the total count of lines in the recordfile
-  if [ "$(equal $LASTLINEREAD "$(wc -l $RECORDFILE | awk '{print $(NF - 1)}')")" != "True" ]; then
+  # if the number of lines read so far is less than the number of lines currently in the input output file
+  if [ $(expr "$LASTLINEREAD" \< "$(wc -l $RECORDFILE | awk '{print $(NF - 1)}')") = 1 ]; then
 
     # check if the script has been signaled to stop
     if [ "$(tail --lines=1 $RECORDFILE)" == "stop getting attacker input"  ]; then
