@@ -66,7 +66,7 @@ while [ 0 ]; do
   if [ $(expr "$LASTLINEREAD" \< "$(wc -l $RECORDFILE | awk '{print $(NF - 1)}')") = 1 ]; then
 
     # check if the script has been signaled to stop
-    if [ "$(tail --lines=1 $RECORDFILE)" == "stop getting attacker input"  ]; then
+    if [ "$(tail --lines=1 $RECORDFILE)" = "stop getting attacker input"  ]; then
   
       cleanup
       echo "game completed" | nc $SCORING_HOST 3456
@@ -75,9 +75,9 @@ while [ 0 ]; do
     fi
 
     # check for doubles - if the attacking team is trying things twice, just ignore the input.
-    if [ $(doubles_s_and_r $RECORDFILE) == "True"  ]; then
+    if [ $(doubles_s_and_r $RECORDFILE) = "True"  ]; then
 
-      echo "$(date +%m-%d--%H:%M:%S) - RECIEVED DOUBLE OF FUZZ DATA, IGNORING AND MOVING ON.." | nc $ATTACKING_HOST 2222
+      echo "$(date +%m-%d--%H:%M:%S) - RECIEVED DOUBLE, IGNORING." | nc $ATTACKING_HOST 2222
       continue
 
     fi
@@ -130,7 +130,7 @@ myout = gdb.execute(\"run < input_file.txt 1> $DEFENDING_RECORD_FILE 2> $DEFENDI
       rm $TMP_FILE
       NOW="$(date +%m-%d--%H:%M:%S)"
       OUTPUT="$(./$CALC_EXEC < input_file.txt 2> stderror.txt)"
-      if [ "$OUTPUT" == "" ]; then
+      if [ "$OUTPUT" = "" ]; then
         OUTPUT="$(cat stderror.txt)"
       fi
       echo "$INPUT:0:$OUTPUT" | nc $SCORING_HOST 3456 
