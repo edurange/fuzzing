@@ -5,9 +5,9 @@
   9/1/14, 4:30a
 
 ---
-listens for any data on
+listens for any data (using TCP) on
 port 3456 to pipe it to
-a static file upon recieval
+a static file (filename) upon recieval
 """
 
 """
