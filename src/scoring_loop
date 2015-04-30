@@ -73,22 +73,22 @@ while [ 0 ]; do
     # if the refcalc output and the given output are the same, award appropriate points
     if [ $(equal "$REFCALC_OUTPUT" "$OUTPUT" 2> $ERRLOG) == "True" ]; then
 
-    # defending team gets points and attacking team gets no points
-      DEFENDING_PTS="$(echo "$DEFENDING_PTS + 10" | /usr/bin/refcalc/calc)"
+      # defending team gets points and attacking team gets no points
+      DEFENDING_PTS="$(eval $DEFENDING_PTS + 10)"
       print_score
 
     # else if both the refcalc and the defending team gave errors, defending team gets pts
     elif [[ "$REFCALC_STDERR" != "" && $(echo "$OUTPUT" | grep -q -i "error"; echo $?) = "0" ]]; then
 
-    # defending team gets points and attacking team gets no points
-      DEFENDING_PTS="$(echo "$DEFENDING_PTS + 10" | /usr/bin/refcalc/calc)"
+      # defending team gets points and attacking team gets no points
+      DEFENDING_PTS="$(eval $DEFENDING_PTS + 10)"
       print_score
 
     # else if the given output is a crash
     elif [ "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 1)}')" == "1" ]; then
 
       # attacking team gets 50pts
-      ATTACKING_PTS="$(echo "$ATTACKING_PTS + 50" | /usr/bin/refcalc/calc)"
+      ATTACKING_PTS="$(eval $ATTACKING_PTS + 50)"
       print_score
 
     # else if the refcalc output and the defending team's output are unequal, award appropriate points
@@ -96,7 +96,7 @@ while [ 0 ]; do
 
 
       # defending team gets no points and attacking team gets 10 pts
-      ATTACKING_PTS="$(echo "$ATTACKING_PTS + 10" | /usr/bin/refcalc/calc)"
+      ATTACKING_PTS="$(eval $ATTACKING_PTS + 10)"
       print_score
 
     fi
@@ -118,3 +118,4 @@ done
 
 SRVR_PID=""
 cd $FIRST_CWD
+
