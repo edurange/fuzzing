@@ -30,7 +30,7 @@ ERRLOG="$FIRST_CWD/$SCOREDIRNAME/scoring_errlog.txt"
 LINES_READ_IN_OUT="$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')"
 
 print_score() {
-  echo "[$NOW] [IN: \"$PRETTY_INPUT\" OUT: \"$OUTPUT\"]\t\t\tDEFEND PT: $DEFENDING_PTS ATTACK PT: $ATTACKING_PTS" >> $SCOREBOARD_FILE
+  printf "[$NOW] [IN: \"$PRETTY_INPUT\" OUT: \"$OUTPUT\"] \t\t\t\tDEFEND PT: $DEFENDING_PTS ATTACK PT: $ATTACKING_PTS" >> $SCOREBOARD_FILE
 }
 
 while [ 0 ]; do
