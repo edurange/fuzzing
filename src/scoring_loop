@@ -12,10 +12,26 @@ SCOREDIRNAME="scoring_$(date +%m_%d__%H_%M)"
 mkdir $SCOREDIRNAME
 cd $SCOREDIRNAME
 
+SCOREBOARD_FILE="/tmp/scoring/answers"
+
+LINES_IN_HEADER=4
+# if there is no scoreboard, make a header
+if [ ! $(wc -c /tmp/scoring/answers | awk '{print $(NF - 1)}') -gt 1 ]; then
+  SCOREBOARD_PADDING=$(perl -e 'print " " x 20')
+  echo "$SCOREBOARD_PADDING+---------------------------+" >> $SCOREBOARD_FILE
+  echo "$SCOREBOARD_PADDING|      FUZZING SCORE        |" >> $SCOREBOARD_FILE
+  echo "$SCOREBOARD_PADDING+---------------------------+" >> $SCOREBOARD_FILE
+  echo "$SCOREBOARD_PADDING"
+fi
+
 touch /tmp/calc_in_out
 INPT_OUTPT_FILE="/tmp/calc_in_out"
 ERRLOG="$FIRST_CWD/$SCOREDIRNAME/scoring_errlog.txt"
 LINES_READ_IN_OUT="$(wc -l $INPT_OUTPT_FILE | awk '{print $(NF - 1)}')"
+
+print_score() {
+  echo "[$NOW] [IN: \"$PRETTY_INPUT\" OUT: \"$OUTPUT\"]\t\t\tDEFEND PT: $DEFENDING_PTS ATTACK PT: $ATTACKING_PTS" >> $SCOREBOARD_FILE
+}
 
 while [ 0 ]; do
 
@@ -44,7 +60,7 @@ while [ 0 ]; do
     # find out what the points are currently, if there isn't any points in
     # /tmp/scoring/answers then assign zero to each team, if there is then get
     # the most current points acquired 
-    if [ "0" == "$(wc -l /tmp/scoring/answers | awk '{print $(NF - 1)}')" ]; then
+    if [ "$LINES_IN_HEADER" == "$(wc -l /tmp/scoring/answers | awk '{print $(NF - 1)}')" ]; then
         DEFENDING_PTS="0"
         ATTACKING_PTS="0"
     else
@@ -52,28 +68,28 @@ while [ 0 ]; do
         ATTACKING_PTS="$(tail --lines=1 /tmp/scoring/answers | awk '{print $(NF)}')"
     fi
 
-    NOW=$(date +%m-%d--%H:%M:%S)
+    NOW=$(date +%m/%d/%y**%H:%M:%S)
     PRETTY_INPUT="$(blacklist_replace "$INPUT")"
     # if the refcalc output and the given output are the same, award appropriate points
     if [ $(equal "$REFCALC_OUTPUT" "$OUTPUT" 2> $ERRLOG) == "True" ]; then
 
     # defending team gets points and attacking team gets no points
       DEFENDING_PTS="$(echo "$DEFENDING_PTS + 10" | /usr/bin/refcalc/calc)"
-      echo "$NOW:(INPUT: $PRETTY_INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
+      print_score
 
     # else if both the refcalc and the defending team gave errors, defending team gets pts
     elif [[ "$REFCALC_STDERR" != "" && $(echo "$OUTPUT" | grep -q -i "error"; echo $?) = "0" ]]; then
 
     # defending team gets points and attacking team gets no points
       DEFENDING_PTS="$(echo "$DEFENDING_PTS + 10" | /usr/bin/refcalc/calc)"
-      echo "$NOW:(INPUT: $PRETTY_INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
+      print_score
 
     # else if the given output is a crash
     elif [ "$(echo $MOST_RECENT_LINE | awk -F: '{print $(NF - 1)}')" == "1" ]; then
 
       # attacking team gets 50pts
       ATTACKING_PTS="$(echo "$ATTACKING_PTS + 50" | /usr/bin/refcalc/calc)"
-      echo "$NOW:(INPUT: $PRETTY_INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
+      print_score
 
     # else if the refcalc output and the defending team's output are unequal, award appropriate points
     elif [[ $(equal "$OUTPUT" "$REFCALC_OUTPUT" 2> $ERRLOG) == "False" || "" == $OUTPUT ]]; then
@@ -81,7 +97,7 @@ while [ 0 ]; do
 
       # defending team gets no points and attacking team gets 10 pts
       ATTACKING_PTS="$(echo "$ATTACKING_PTS + 10" | /usr/bin/refcalc/calc)"
-      echo "$NOW:(INPUT: $PRETTY_INPUT, OUTPUT: $OUTPUT) : DEFENDING TEAM'S POINTS = $DEFENDING_PTS ATTACKING TEAM'S POINTS = $ATTACKING_PTS" >> /tmp/scoring/answers
+      print_score
 
     fi
 
@@ -102,5 +118,3 @@ done
 
 SRVR_PID=""
 cd $FIRST_CWD
-
-
