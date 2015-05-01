@@ -1,0 +1,23 @@
+|=-----------------------------------------------------------------------=|
+|==----------------=[         Fuzzing Questions        ]=----------------=|
+|=-----------------------------------------------------------------------=|
+|=----------------------=[ weidav02@evergreen.edu ]=---------------------=|
+|=-----------------------------------------------------------------------=|
+
+1. Why is Fuzzing useful when people already do Software Testing? (Hint: 
+for definition of fuzzing look at this site -> fuzzing-project.org)
+
+
+2. Can you crash the calculator? If yes, can you find and explain the 
+cause of the crash?
+
+
+3. What kind of crash did you find? (Hint: decide a memory corruption bug
+category from here -> wki.pe/Memory_corruption)
+
+
+4. What were the method(s) used in your fuzzer(s), and what were the pros
+and cons you noticed? 
+
+
+

@@ -1,0 +1,26 @@
+|=-----------------------------------------------------------------------=|
+|=-----------------=[         What is Fuzzing?        ]=-----------------=|
+|=-----------------------------------------------------------------------=|
+|=----------------------=[ weidav02@evergreen.edu ]=---------------------=|
+|=-----------------------------------------------------------------------=|
+
+Fuzzing is simply the act of sending fully or partially malformed input to
+an application in an attempt to cause crashes. There are two basic methods 
+of fuzzing; generation fuzzers which create the data to send to the target
+and mutation fuzzers which take existing data and alter it to send to the
+target.
+
+An example of a generation fuzzer is something that would create a set
+of malformed video files and sends them at a target conversion utility. A
+more intelligent kind of generation fuzzer might utilize a video file grammar
+that allows the fuzzing program to create a more complete set of malformed 
+video files. A mutation fuzzer would be something that takes a group of
+sample video files and introduces random mutations to them before delivering
+them to a target conversion utility. 
+
+When running a fuzzer to find crashes in C programs, the user is most likely
+attempting to trigger a memory corruption error. Memory corruption errors
+come in four large categories, using uninitialized memory, using non-owned
+memory, using memory beyond what was allocated, and faulty heap memory
+management.
+

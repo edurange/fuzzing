@@ -1,0 +1,39 @@
+|=-----------------------------------------------------------------------=|
+|==----------------=[          Fuzzing Tutorial        ]=----------------=|
+|=-----------------------------------------------------------------------=|
+|=----------------------=[ weidav02@evergreen.edu ]=---------------------=|
+|=-----------------------------------------------------------------------=|
+
+                  this guide aims to help students in
+               getting started with the fuzzing scenario.
+
+1. First, you need to gain entry to the scenario. SSH into the fuzzing
+scenario's NAT machine. For example, try to run: "ssh attacking_team@5x.xxx.xx.xxx"
+
+2. After gaining entry to the scenario, you are ready to SSH into your
+machine, the command to do this looks like: "ssh attacking_team@10.0.26.129"
+
+3. Now you may read the rules and try using the send_fuzz_data command, perhaps
+you may want to try the example at the end of the rules. (Hint: try to mix up
+the order of operations)
+
+4. Download the python fuzzing program example from the following link and run
+the code. To do this, use the commands as shown below.
+ * wget https://raw.githubusercontent.com/edurange/fuzzing/master/ex/example_fuzz.py
+ * chmod +x example_fuzz.py
+ * ./example_fuzz.py
+
+5. example_fuzz.py runs through the first 5 characters in the ascii character
+set (not including the null character) and sends these as inputs to the defending
+calculator using the send_fuzz_data command.
+
+"chr(i)" returns the character with the value of the integer "i" encoded with ascii.
+"os.system(cmd)" attempts to run the string "cmd" containing a command in the shell
+(for example, "os.system('whoami')" should print your username).
+
+To see a quick reference of the ascii character set, try running "man ascii".
+
+6. Examine the calculator's output by running "cat /tmp/calc_in_out". Then,
+examine your score by running "nc 10.0.26.128 1234". Ensure that you understand
+why the scores appear as they do.
+
